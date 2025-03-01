@@ -16,11 +16,6 @@ export const Navbar: React.FC = () => {
       command: () => navigate("/empresas"),
     },
     {
-      label: "Roles",
-      icon: "pi pi-user-plus",
-      command: () => navigate("/roles"),
-    },
-    {
       label: "Categorías",
       icon: "pi pi-objects-column",
       command: () => navigate("/categorias"),
@@ -29,6 +24,11 @@ export const Navbar: React.FC = () => {
       label: "Productos",
       icon: "pi pi-tag",
       command: () => navigate("/productos"),
+    },
+    {
+      label: "Roles",
+      icon: "pi pi-user-plus",
+      command: () => navigate("/roles"),
     },
     {
       label: "Usuarios",

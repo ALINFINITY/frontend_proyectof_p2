@@ -23,7 +23,6 @@ export const Usuarioc: React.FC = () => {
   // Modal de agregar/editar usuario
   const [usuario, setUsuario] = useState<Partial<Usuario>>({});
   const [rol, setRol] = useState<Partial<Rol>>({});
-  const [empresa, setEmpresa] = useState<Partial<Empresa>>({});
   const [visible, setVisible] = useState<boolean>(false);
 
   // Cargar usuarios desde la base de datos
@@ -93,7 +92,7 @@ export const Usuarioc: React.FC = () => {
       return;
     }
 
-    if (!empresa.id_empresa) {
+    if (!usuario.empresa?.id_empresa) {
       toast.current?.show({
         severity: "info",
         summary: "Empresa",
@@ -110,10 +109,10 @@ export const Usuarioc: React.FC = () => {
         if (rol.id_rol) {
           await UsuarioService.asignarRol(usuario.id_usuario, rol.id_rol);
         }
-        if (empresa.id_empresa) {
+        if (usuario.empresa.id_empresa) {
           await UsuarioService.asignarEmpresa(
             usuario.id_usuario,
-            empresa.id_empresa
+            usuario.empresa.id_empresa
           );
         }
 
@@ -128,13 +127,6 @@ export const Usuarioc: React.FC = () => {
 
         if (us && rol.id_rol) {
           await UsuarioService.asignarRol(us.id_usuario, rol.id_rol);
-        }
-
-        if (us && empresa.id_empresa) {
-          await UsuarioService.asignarEmpresa(
-            us.id_usuario,
-            empresa.id_empresa
-          );
         }
 
         toast.current?.show({
@@ -189,7 +181,6 @@ export const Usuarioc: React.FC = () => {
   const modalVisible = () => {
     setUsuario({});
     setRol({});
-    setEmpresa({});
     setVisible(true);
   };
 
@@ -289,10 +280,10 @@ export const Usuarioc: React.FC = () => {
           />
           <Dropdown
             id="empresa"
-            value={empresa}
+            value={usuario.empresa}
             options={empresas}
             optionLabel="nombre"
-            onChange={(e) => setEmpresa(e.value)}
+            onChange={(e) => setUsuario({ ...usuario, empresa: e.value })}
             placeholder="Empresa"
           />
         </Dialog>

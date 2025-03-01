@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Producto } from "../types/types";
+import { Inventario, Producto } from "../types/types";
 import { Toast } from "primereact/toast";
 import { ProductoService } from "../services/productoService";
 import { DataTable } from "primereact/datatable";
@@ -135,7 +135,42 @@ export const Productosc: React.FC = () => {
     });
   };
 
-  //
+  //Eliminar Inventario
+  const deleteinventario = async (id: number, prl: number) => {
+    if (prl !== 0) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Inventario lleno",
+        detail: "El inventario no se puede eliminar",
+        life: 3000,
+      });
+      return;
+    }
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de eliminar este inventario?"
+    );
+    if (confirmDelete) {
+      try {
+        await InventarioService.remove(id);
+
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Inventario eliminado correctamente",
+          life: 3000,
+        });
+
+        loadInventarios();
+      } catch (e) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error Message",
+          detail: "Error al eliminar el inventario",
+          life: 3000,
+        });
+      }
+    }
+  };
 
   //Modal visible
   const modalVisible = () => {
@@ -357,22 +392,16 @@ export const Productosc: React.FC = () => {
         ></Column>
         <Column
           header="Acciones"
-          body={(rowData: Producto) => (
+          body={(rowData: Inventario) => (
             <>
-              <Button
-                className="p-button-warning mybtn"
-                icon="pi pi-pencil"
-                onClick={() => {
-                  setProducto(rowData);
-                  setVisible(true);
-                }}
-              />
               <Button
                 className="p-button-danger mybtn"
                 icon="pi pi-trash"
                 onClick={() => {
-                  setProducto(rowData);
-                  deleteProducto();
+                  deleteinventario(
+                    rowData.id_inventario,
+                    rowData.productos.length
+                  );
                 }}
               />
             </>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Usuario } from "../types/types";
+import { Rol, Usuario } from "../types/types";
 import { Toast } from "primereact/toast";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -7,6 +7,8 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { UsuarioService } from "../services/userService";
+import { RolService } from "../services/rolService";
+import { Dropdown } from "primereact/dropdown";
 
 export const Usuarioc: React.FC = () => {
   // Notificaciones
@@ -14,9 +16,11 @@ export const Usuarioc: React.FC = () => {
 
   // Usuarios
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [roles, setRoles] = useState<Rol[]>([]);
 
   // Modal de agregar/editar usuario
   const [usuario, setUsuario] = useState<Partial<Usuario>>({});
+  const [rol, setRol] = useState<Partial<Rol>>({});
   const [visible, setVisible] = useState<boolean>(false);
 
   // Cargar usuarios desde la base de datos
@@ -34,16 +38,51 @@ export const Usuarioc: React.FC = () => {
     }
   };
 
+  const loadroles = async () => {
+    try {
+      const data = await RolService.findAll();
+      setRoles(data);
+    } catch (e) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error Message",
+        detail: "Error al cargar los roles",
+        life: 3000,
+      });
+    }
+  };
+
   // Cargar usuarios al inicio
   useEffect(() => {
     loadUsuarios();
+    loadroles();
   }, []);
 
   // Guardar o actualizar usuario
   const saveUsuario = async () => {
+    if (
+      !usuario.email ||
+      !usuario.nombre_completo ||
+      !usuario.telefono ||
+      !usuario.password_hash
+    ) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error Message",
+        detail: "Todos los campos son obligatorios",
+        life: 3000,
+      });
+      return;
+    }
+
     try {
       if (usuario.id_usuario) {
         await UsuarioService.update(usuario.id_usuario, usuario);
+
+        if (rol.id_rol) {
+          await UsuarioService.asignarRol(usuario.id_usuario, rol.id_rol);
+        }
+
         toast.current?.show({
           severity: "success",
           summary: "Éxito",
@@ -51,7 +90,12 @@ export const Usuarioc: React.FC = () => {
           life: 3000,
         });
       } else {
-        await UsuarioService.create(usuario);
+        const us = await UsuarioService.create(usuario);
+
+        if (us && rol.id_rol) {
+          await UsuarioService.asignarRol(us.id_usuario, rol.id_rol);
+        }
+
         toast.current?.show({
           severity: "success",
           summary: "Éxito",
@@ -65,8 +109,8 @@ export const Usuarioc: React.FC = () => {
     } catch (e) {
       toast.current?.show({
         severity: "error",
-        summary: "Error Message",
-        detail: "Error al guardar el usuario",
+        summary: "Error al guardar el usuario",
+        detail: "Campos teléfono y email deben ser únicos",
         life: 3000,
       });
     }
@@ -103,6 +147,7 @@ export const Usuarioc: React.FC = () => {
   // Abrir el modal para crear/editar usuario
   const modalVisible = () => {
     setUsuario({});
+    setRol({});
     setVisible(true);
   };
 
@@ -192,6 +237,14 @@ export const Usuarioc: React.FC = () => {
               autoFocus
             />
           </div>
+          <Dropdown
+            id="rol"
+            value={rol}
+            options={roles}
+            optionLabel="nombre"
+            onChange={(e) => setRol(e.value)}
+            placeholder="Añada un rol"
+          />
         </Dialog>
       </div>
 
@@ -202,6 +255,16 @@ export const Usuarioc: React.FC = () => {
         <Column field="nombre_completo" header="Nombre" sortable></Column>
         <Column field="email" header="Email" sortable></Column>
         <Column field="telefono" header="Teléfono" sortable></Column>
+        <Column
+          header="Roles"
+          body={(rowData) => (
+            <ul>
+              {rowData.roles.map((rol: Rol) => (
+                <li key={rol.id_rol}>{rol.nombre}</li>
+              ))}
+            </ul>
+          )}
+        ></Column>
         <Column
           header="Acciones"
           body={(rowData: Usuario) => (

@@ -89,8 +89,9 @@ export const Empresac: React.FC = () => {
       });
     }
   };
-  //Eliminar
 
+
+  //Eliminar Empresa
   const deleteempresa = async (id: number) => {
     const confirmDelete = window.confirm(
       "¿Estás seguro de eliminar esta empresa?"
@@ -124,8 +125,8 @@ export const Empresac: React.FC = () => {
       await InventarioService.create(empresaId);
       toast.current?.show({
         severity: "success",
-        summary: "Éxito",
-        detail: "Inventario creado correctamente",
+        summary: "Inventario creado con éxito",
+        detail: "Revise la sección de productos",
         life: 3000,
       });
       loadempresas();

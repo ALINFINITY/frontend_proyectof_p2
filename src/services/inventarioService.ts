@@ -11,4 +11,8 @@ export const InventarioService = {
       method: "POST",
     });
   },
+
+  remove: async (inventarioid: number): Promise<void> => {
+    return await fetchAPI(`/inventario/${inventarioid}`, { method: "DELETE" });
+  },
 };

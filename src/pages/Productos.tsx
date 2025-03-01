@@ -77,7 +77,7 @@ export const Productosc: React.FC = () => {
     loadInventarios(); // Carga de inventarios
   }, []);
 
-  //Guardar o actualizar producto
+  //Guardar Actualizar
   const saveProducto = async () => {
     if (
       !producto.nombre ||
@@ -96,25 +96,34 @@ export const Productosc: React.FC = () => {
       return;
     }
     try {
-      // Crear el producto
-      const createdProducto = await ProductoService.create(producto);
+      if (producto.id_producto) {
+        await ProductoService.update(producto.id_producto, producto);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Producto actualizado correctamente",
+          life: 3000,
+        });
+      } else {
+        const createdProducto = await ProductoService.create(producto);
 
-      // Llamar al servicio asignar con los IDs correspondientes
-      await ProductoService.asignarCaracteristicas(
-        createdProducto.id_producto,
-        producto.categoria.id_categoria,
-        producto.inventario.id_inventario
-      );
+        await ProductoService.asignarCaracteristicas(
+          createdProducto.id_producto,
+          producto.categoria.id_categoria,
+          producto.inventario.id_inventario
+        );
 
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Producto guardado y asignado correctamente",
-        life: 3000,
-      });
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Producto guardado y asignado correctamente",
+          life: 3000,
+        });
+      }
 
       setVisible(false);
       loadProductos();
+      loadInventarios();
     } catch (e) {
       toast.current?.show({
         severity: "error",
@@ -126,13 +135,32 @@ export const Productosc: React.FC = () => {
   };
 
   //Eliminar producto
-  const deleteProducto = async () => {
-    toast.current?.show({
-      severity: "info",
-      summary: "Info",
-      detail: "Función aún no definida para eliminar productos",
-      life: 3000,
-    });
+  const deleteproducto = async (id: number) => {
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de eliminar este producto?"
+    );
+    if (confirmDelete) {
+      try {
+        await ProductoService.remove(id);
+
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Producto eliminado correctamente",
+          life: 3000,
+        });
+
+        loadProductos();
+        loadInventarios();
+      } catch (e) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error Message",
+          detail: "Error al eliminar el producto",
+          life: 3000,
+        });
+      }
+    }
   };
 
   //Eliminar Inventario
@@ -345,6 +373,7 @@ export const Productosc: React.FC = () => {
         ></Column>
         <Column field="precio_venta" header="Precio de Venta" sortable></Column>
         <Column field="categoria.nombre" header="Categoría" sortable></Column>
+        <Column field="inventario.id_inventario" header="ID Inventario" sortable></Column>
         <Column field="stock_max" header="Stock máximo" sortable></Column>
         <Column field="stock_min" header="Stock mínimo" sortable></Column>
         <Column
@@ -363,8 +392,7 @@ export const Productosc: React.FC = () => {
                 className="p-button-danger mybtn"
                 icon="pi pi-trash"
                 onClick={() => {
-                  setProducto(rowData);
-                  deleteProducto();
+                  deleteproducto(rowData.id_producto);
                 }}
               />
             </>

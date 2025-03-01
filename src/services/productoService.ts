@@ -48,4 +48,18 @@ export const ProductoService = {
       { method: "POST" }
     );
   },
+
+  update: async (
+    id: number,
+    producto: Partial<Producto>
+  ): Promise<Producto> => {
+    return await fetchAPI(`/producto/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(producto),
+    });
+  },
+
+  remove: async (id: number): Promise<void> => {
+    return await fetchAPI(`/producto/${id}`, { method: "DELETE" });
+  },
 };

@@ -288,7 +288,6 @@ export const Productosc: React.FC = () => {
             value={producto.inventario}
             options={inventarios}
             optionLabel="id_inventario" // Muestra el id del inventario
-            optionValue="id_inventario" // El valor seleccionado será el id
             onChange={
               (e) => setProducto({ ...producto, inventario: e.value }) // Guarda el id seleccionado
             }
@@ -313,6 +312,49 @@ export const Productosc: React.FC = () => {
         <Column field="categoria.nombre" header="Categoría" sortable></Column>
         <Column field="stock_max" header="Stock máximo" sortable></Column>
         <Column field="stock_min" header="Stock mínimo" sortable></Column>
+        <Column
+          header="Acciones"
+          body={(rowData: Producto) => (
+            <>
+              <Button
+                className="p-button-warning mybtn"
+                icon="pi pi-pencil"
+                onClick={() => {
+                  setProducto(rowData);
+                  setVisible(true);
+                }}
+              />
+              <Button
+                className="p-button-danger mybtn"
+                icon="pi pi-trash"
+                onClick={() => {
+                  setProducto(rowData);
+                  deleteProducto();
+                }}
+              />
+            </>
+          )}
+        />
+      </DataTable>
+
+      <h1>Inventarios</h1>
+      <DataTable value={inventarios} scrollable style={{ overflowX: "auto" }}>
+        <Column field="id_inventario" header="ID Inventario" sortable></Column>
+        <Column field="empresa.nombre" header="Empresa Dueña" sortable></Column>
+        <Column
+          header="Productos"
+          body={(rowData) => (
+            <ul>
+              {rowData.productos.map((producto: Producto) => (
+                <li key={producto.id_producto}>{producto.nombre}</li>
+              ))}
+            </ul>
+          )}
+        ></Column>
+        <Column
+          header="Número de Productos"
+          body={(rowData) => rowData.productos.length}
+        ></Column>
         <Column
           header="Acciones"
           body={(rowData: Producto) => (

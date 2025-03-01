@@ -21,7 +21,7 @@ git clone https://github.com/ALINFINITY/frontend_proyectof_p2.git
 4: Ejecute el siguiente comando para instalar las dependencias del proyecto
 
 ```bash
-$ npm install
+npm install
 ```
 
 5: Ejecute el siguiente comando para desplegar el proyecto

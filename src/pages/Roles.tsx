@@ -82,13 +82,29 @@ export const Roles: React.FC = () => {
   };
 
   //Eliminar
-  const deleterol = async () => {
-    toast.current?.show({
-      severity: "info",
-      summary: "Info",
-      detail: "Aun no definida esta funcion",
-      life: 3000,
-    });
+  const deleterol = async (id: number) => {
+    const confirmDelete = window.confirm("¿Estás seguro de eliminar este rol?");
+    if (confirmDelete) {
+      try {
+        await RolService.remove(id);
+
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Rol eliminado correctamente",
+          life: 3000,
+        });
+
+        loadroles();
+      } catch (e) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error Message",
+          detail: "Error al eliminar el rol",
+          life: 3000,
+        });
+      }
+    }
   };
 
   //Modal
@@ -176,10 +192,7 @@ export const Roles: React.FC = () => {
               <Button
                 className="p-button-danger mybtn"
                 icon="pi pi-trash"
-                onClick={() => {
-                  setRol(rowData);
-                  deleterol();
-                }}
+                onClick={() => deleterol(rowData.id_rol)}
               />
             </>
           )}

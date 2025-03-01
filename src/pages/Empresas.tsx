@@ -42,24 +42,79 @@ export const Empresac: React.FC = () => {
 
   //Guardar Actualiza
   const saveempresa = async () => {
-    try {
-      await EmpresaService.create(empresa);
+    if (
+      !empresa.nombre ||
+      !empresa.ruc ||
+      !empresa.direccion ||
+      !empresa.telefono ||
+      !empresa.email_contacto ||
+      !empresa.estado
+    ) {
       toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "empresa guardado correctamente",
+        severity: "error",
+        summary: "Error de validación",
+        detail: "Por favor, complete todos los campos requeridos.",
         life: 3000,
       });
+      return;
+    }
+
+    try {
+      if (empresa.id_empresa) {
+        await EmpresaService.update(empresa.id_empresa, empresa);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Empresa actualizada correctamente",
+          life: 3000,
+        });
+      } else {
+        await EmpresaService.create(empresa);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Empresa guardada correctamente",
+          life: 3000,
+        });
+      }
 
       setVisible(false);
       loadempresas();
     } catch (e) {
       toast.current?.show({
         severity: "error",
-        summary: "Error Message",
-        detail: "Error el guardar la empresa",
+        summary: "Error",
+        detail: "Error al guardar o actualizar la empresa",
         life: 3000,
       });
+    }
+  };
+  //Eliminar
+
+  const deleteempresa = async (id: number) => {
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de eliminar esta empresa?"
+    );
+    if (confirmDelete) {
+      try {
+        await EmpresaService.remove(id);
+
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Empresa eliminada correctamente",
+          life: 3000,
+        });
+
+        loadempresas();
+      } catch (e) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error Message",
+          detail: "Error al eliminar la empresa",
+          life: 3000,
+        });
+      }
     }
   };
 
@@ -73,7 +128,7 @@ export const Empresac: React.FC = () => {
         detail: "Inventario creado correctamente",
         life: 3000,
       });
-      loadempresas()
+      loadempresas();
     } catch (e) {
       toast.current?.show({
         severity: "error",
@@ -131,7 +186,7 @@ export const Empresac: React.FC = () => {
             <label htmlFor="nombre">Nombre:</label>
             <InputText
               id="nombre"
-              value={empresa.nombre || ""}
+              value={empresa.nombre}
               onChange={(e) =>
                 setempresa({ ...empresa, nombre: e.target.value })
               }
@@ -143,7 +198,7 @@ export const Empresac: React.FC = () => {
             <label htmlFor="ruc">RUC:</label>
             <InputText
               id="ruc"
-              value={empresa.ruc || ""}
+              value={empresa.ruc}
               onChange={(e) => setempresa({ ...empresa, ruc: e.target.value })}
               required
             />
@@ -153,7 +208,7 @@ export const Empresac: React.FC = () => {
             <label htmlFor="direccion">Dirección:</label>
             <InputText
               id="direccion"
-              value={empresa.direccion || ""}
+              value={empresa.direccion}
               onChange={(e) =>
                 setempresa({ ...empresa, direccion: e.target.value })
               }
@@ -164,7 +219,7 @@ export const Empresac: React.FC = () => {
             <label htmlFor="telefono">Teléfono:</label>
             <InputText
               id="telefono"
-              value={empresa.telefono || ""}
+              value={empresa.telefono}
               onChange={(e) =>
                 setempresa({ ...empresa, telefono: e.target.value })
               }
@@ -175,7 +230,8 @@ export const Empresac: React.FC = () => {
             <label htmlFor="email_contacto">Email de Contacto:</label>
             <InputText
               id="email_contacto"
-              value={empresa.email_contacto || ""}
+              type="email"
+              value={empresa.email_contacto}
               onChange={(e) =>
                 setempresa({ ...empresa, email_contacto: e.target.value })
               }
@@ -197,7 +253,7 @@ export const Empresac: React.FC = () => {
             <label htmlFor="estado">Estado:</label>
             <InputText
               id="estado"
-              value={empresa.estado || ""}
+              value={empresa.estado}
               onChange={(e) =>
                 setempresa({ ...empresa, estado: e.target.value })
               }
@@ -251,9 +307,7 @@ export const Empresac: React.FC = () => {
               <Button
                 className="p-button-danger mybtn"
                 icon="pi pi-trash"
-                onClick={() => {
-                  setempresa(rowData);
-                }}
+                onClick={() => deleteempresa(rowData.id_empresa)}
               />
               <Button
                 className="p-button-info mybtn"

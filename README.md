@@ -1,54 +1,61 @@
-# React + TypeScript + Vite
+# Gestión Empresarial
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Integrantes
 
-Currently, two official plugins are available:
+- Quilumbaquin Pillisa Alan David 
+- Edison Henry Carvajal Pabón 
+- Luis Andres López mora
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Instalación del Proyecto
 
-## Expanding the ESLint configuration
+1: Ubíquese en la carpeta en donde desea guardar el proyecto
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+2: Ejecute el siguiente comando de Git para clonar el proyecto
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+git clone https://github.com/ALINFINITY/frontend_proyectof_p2.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3: Abra el proyecto dentro de un IDE de programación como VSCode
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+4: Ejecute el siguiente comando para instalar las dependencias del proyecto
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+$ npm install
 ```
+
+5: Ejecute el siguiente comando para desplegar el proyecto
+
+```bash
+npm run dev
+```
+
+6: Ingrese al proyecto a través de localhost:5173
+
+
+# Aspectos Generales
+
+- Este PWA es el MVP de un proyecto de Gestión Empresarial.
+
+- El PWA se diseño para dar a conocer los beneficios que tendría implementar este desarrollo a gran escala.
+
+- Relaciona las Entidades de las organizaciones empresariales
+
+
+# Tecnologías utilizadas
+
+- React-router-dom para la navegación
+
+- PrimeReact para el deseño de interfaces
+
+- Proyecto estructurado por componentes, páginas, servicios y tipos
+
+- Los componentes se pueden reutilizar en cualquier página
+
+- Las páginas están diseñadas con PrimeReact
+
+- En los servicios se definen los métodos para hacer CRUD y se utilizan en su página correspondiente
+
+- En los types se definieron las interfaces de todas las entidades que intervienen en este PWA
+
+

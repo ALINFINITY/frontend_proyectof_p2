@@ -41,14 +41,34 @@ export const Categoriac: React.FC = () => {
 
   //Guardar Actualiza
   const savecategoria = async () => {
-    try {
-      await CategoriaService.create(categoria);
+    if (!categoria.nombre) {
       toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Categoría guardada correctamente",
+        severity: "error",
+        summary: "Error Message",
+        detail: "El campo nombre es obligatorio",
         life: 3000,
       });
+      return;
+    }
+
+    try {
+      if (categoria.id_categoria) {
+        await CategoriaService.update(categoria.id_categoria, categoria);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Categoría actualizada correctamente",
+          life: 3000,
+        });
+      } else {
+        await CategoriaService.create(categoria);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Categoría guardada correctamente",
+          life: 3000,
+        });
+      }
 
       setVisible(false);
       loadcategorias();
@@ -56,9 +76,37 @@ export const Categoriac: React.FC = () => {
       toast.current?.show({
         severity: "error",
         summary: "Error Message",
-        detail: "Error el guardar la categoría",
+        detail: "Error al guardar o actualizar la categoría",
         life: 3000,
       });
+    }
+  };
+
+  //Eliminar categoría
+  const deletecategoria = async (id: number) => {
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de eliminar esta categoría?"
+    );
+    if (confirmDelete) {
+      try {
+        await CategoriaService.remove(id);
+
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Categoría eliminada correctamente",
+          life: 3000,
+        });
+
+        loadcategorias();
+      } catch (e) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error Message",
+          detail: "Error al eliminar la categoría",
+          life: 3000,
+        });
+      }
     }
   };
 
@@ -161,9 +209,7 @@ export const Categoriac: React.FC = () => {
               <Button
                 className="p-button-danger mybtn"
                 icon="pi pi-trash"
-                onClick={() => {
-                  setcategoria(rowData);
-                }}
+                onClick={() => deletecategoria(rowData.id_categoria)}
               />
             </>
           )}

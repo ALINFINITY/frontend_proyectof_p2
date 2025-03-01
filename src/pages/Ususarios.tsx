@@ -42,13 +42,23 @@ export const Usuarioc: React.FC = () => {
   // Guardar o actualizar usuario
   const saveUsuario = async () => {
     try {
-      await UsuarioService.create(usuario);
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Usuario guardado correctamente",
-        life: 3000,
-      });
+      if (usuario.id_usuario) {
+        await UsuarioService.update(usuario.id_usuario, usuario);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Usuario actualizado correctamente",
+          life: 3000,
+        });
+      } else {
+        await UsuarioService.create(usuario);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Usuario guardado correctamente",
+          life: 3000,
+        });
+      }
 
       setVisible(false);
       loadUsuarios();
@@ -62,14 +72,32 @@ export const Usuarioc: React.FC = () => {
     }
   };
 
-  // Eliminar usuario
-  const deleteUsuario = async () => {
-    toast.current?.show({
-      severity: "info",
-      summary: "Info",
-      detail: "Aun en creación",
-      life: 3000,
-    });
+  //Eliminar
+  const delusuario = async (id: number) => {
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de eliminar este usuario?"
+    );
+    if (confirmDelete) {
+      try {
+        await UsuarioService.remove(id);
+
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Usuario eliminado correctamente",
+          life: 3000,
+        });
+
+        loadUsuarios();
+      } catch (e) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error Message",
+          detail: "Error al eliminar el usuario",
+          life: 3000,
+        });
+      }
+    }
   };
 
   // Abrir el modal para crear/editar usuario
@@ -189,7 +217,7 @@ export const Usuarioc: React.FC = () => {
               <Button
                 className="p-button-danger mybtn"
                 icon="pi pi-trash"
-                onClick={() => deleteUsuario()}
+                onClick={() => delusuario(rowData.id_usuario)}
               />
             </>
           )}

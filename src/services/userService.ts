@@ -11,10 +11,18 @@ export const UsuarioService = {
   },
 
   create: async (data: Partial<Usuario>): Promise<Usuario> => {
-    const { nombre_completo, email, telefono, password_hash, empresa, roles } = data;
+    const { nombre_completo, email, telefono, password_hash, empresa, roles } =
+      data;
     return await fetchAPI("/usuario", {
       method: "POST",
-      body: JSON.stringify({ nombre_completo, email, telefono, password_hash, empresa, roles }),
+      body: JSON.stringify({
+        nombre_completo,
+        email,
+        telefono,
+        password_hash,
+        empresa,
+        roles,
+      }),
     });
   },
 
@@ -24,9 +32,30 @@ export const UsuarioService = {
     });
   },
 
-  asignarEmpresa: async (userId: number, empresaId: number): Promise<Usuario> => {
+  asignarEmpresa: async (
+    userId: number,
+    empresaId: number
+  ): Promise<Usuario> => {
     return await fetchAPI(`/usuario/${userId}/empresa/${empresaId}`, {
       method: "POST",
     });
+  },
+
+  update: async (id: number, usuario: Partial<Usuario>): Promise<Usuario> => {
+    const { nombre_completo, email, telefono, estado, password_hash } = usuario;
+    return await fetchAPI(`/usuario/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        nombre_completo,
+        email,
+        telefono,
+        estado,
+        password_hash,
+      }),
+    });
+  },
+
+  remove: async (id: number): Promise<void> => {
+    return await fetchAPI(`/usuario/${id}`, { method: "DELETE" });
   },
 };

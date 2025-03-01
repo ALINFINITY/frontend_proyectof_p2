@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Rol, Usuario } from "../types/types";
+import { Empresa, Rol, Usuario } from "../types/types";
 import { Toast } from "primereact/toast";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -9,6 +9,7 @@ import { InputText } from "primereact/inputtext";
 import { UsuarioService } from "../services/userService";
 import { RolService } from "../services/rolService";
 import { Dropdown } from "primereact/dropdown";
+import { EmpresaService } from "../services/empresaService";
 
 export const Usuarioc: React.FC = () => {
   // Notificaciones
@@ -17,10 +18,12 @@ export const Usuarioc: React.FC = () => {
   // Usuarios
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [roles, setRoles] = useState<Rol[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
 
   // Modal de agregar/editar usuario
   const [usuario, setUsuario] = useState<Partial<Usuario>>({});
   const [rol, setRol] = useState<Partial<Rol>>({});
+  const [empresa, setEmpresa] = useState<Partial<Empresa>>({});
   const [visible, setVisible] = useState<boolean>(false);
 
   // Cargar usuarios desde la base de datos
@@ -52,10 +55,25 @@ export const Usuarioc: React.FC = () => {
     }
   };
 
+  const loadempresas = async () => {
+    try {
+      const data = await EmpresaService.findAll();
+      setEmpresas(data);
+    } catch (e) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error Message",
+        detail: "Error al cargar las empresas",
+        life: 3000,
+      });
+    }
+  };
+
   // Cargar usuarios al inicio
   useEffect(() => {
     loadUsuarios();
     loadroles();
+    loadempresas();
   }, []);
 
   // Guardar o actualizar usuario
@@ -75,12 +93,28 @@ export const Usuarioc: React.FC = () => {
       return;
     }
 
+    if (!empresa.id_empresa) {
+      toast.current?.show({
+        severity: "info",
+        summary: "Empresa",
+        detail: "No olvide asignar la empresa",
+        life: 3000,
+      });
+      return;
+    }
+
     try {
       if (usuario.id_usuario) {
         await UsuarioService.update(usuario.id_usuario, usuario);
 
         if (rol.id_rol) {
           await UsuarioService.asignarRol(usuario.id_usuario, rol.id_rol);
+        }
+        if (empresa.id_empresa) {
+          await UsuarioService.asignarEmpresa(
+            usuario.id_usuario,
+            empresa.id_empresa
+          );
         }
 
         toast.current?.show({
@@ -94,6 +128,13 @@ export const Usuarioc: React.FC = () => {
 
         if (us && rol.id_rol) {
           await UsuarioService.asignarRol(us.id_usuario, rol.id_rol);
+        }
+
+        if (us && empresa.id_empresa) {
+          await UsuarioService.asignarEmpresa(
+            us.id_usuario,
+            empresa.id_empresa
+          );
         }
 
         toast.current?.show({
@@ -148,6 +189,7 @@ export const Usuarioc: React.FC = () => {
   const modalVisible = () => {
     setUsuario({});
     setRol({});
+    setEmpresa({});
     setVisible(true);
   };
 
@@ -245,6 +287,14 @@ export const Usuarioc: React.FC = () => {
             onChange={(e) => setRol(e.value)}
             placeholder="Añada un rol"
           />
+          <Dropdown
+            id="empresa"
+            value={empresa}
+            options={empresas}
+            optionLabel="nombre"
+            onChange={(e) => setEmpresa(e.value)}
+            placeholder="Empresa"
+          />
         </Dialog>
       </div>
 
@@ -255,6 +305,7 @@ export const Usuarioc: React.FC = () => {
         <Column field="nombre_completo" header="Nombre" sortable></Column>
         <Column field="email" header="Email" sortable></Column>
         <Column field="telefono" header="Teléfono" sortable></Column>
+        <Column field="empresa.nombre" header="Empresa" sortable></Column>
         <Column
           header="Roles"
           body={(rowData) => (
